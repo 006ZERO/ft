@@ -1,4 +1,4 @@
-*This activity has been created as part of the 42 curriculum by gabusalm@42.learner.42.tech*
+*This activity has been created as part of the 42 curriculum by <gabusalm@learner.42.tech>*
 
 # Libft
 
