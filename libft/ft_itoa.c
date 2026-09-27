@@ -1,43 +1,52 @@
 #include "libft.h"
 
-static int	count_digits(long n)
-{
-	int	count;
+static int count_digit(int n) {
+  size_t count;
 
-	count = 1;
-	if (n < 0)
-		count++;
-	while (n / 10 != 0)
-	{
-		n /= 10;
-		count++;
-	}
-	return (count);
+  count = 0;
+  if (n == 0)
+    return (1);
+  count = 0;
+  if (n < 0)
+    count = 1;
+  while (n != 0) {
+    n = n / 10;
+    count++;
+  }
+  return (count);
 }
 
-char	*ft_itoa(int n)
-{
-	char	*str;
-	long	nb;
-	int		len;
+static void fill(char *str, size_t i, int n, int neg) {
+  if (n == 0) {
+    str[i] = '0';
+    return;
+  }
+  while (n > 0) {
+    str[i] = (n % 10) + '0';
+    n = n / 10;
+    i--;
+  }
+  if (neg)
+    str[0] = '-';
+}
 
-	nb = n;
-	len = count_digits(nb);
-	str = (char *)malloc(sizeof(char) * (len + 1));
-	if (str == NULL)
-		return (NULL);
-	str[len] = '\0';
-	if (nb < 0)
-	{
-		str[0] = '-';
-		nb = -nb;
-	}
-	if (nb == 0)
-		str[0] = '0';
-	while (nb > 0)
-	{
-		str[--len] = (nb % 10) + '0';
-		nb /= 10;
-	}
-	return (str);
+char *ft_itoa(int n) {
+  size_t len;
+  size_t i;
+  char *str;
+  int neg;
+
+  if (n == -2147483648)
+    return (ft_strdup("-2147483648"));
+  len = count_digit(n);
+  str = malloc(len + 1);
+  if (str == NULL)
+    return (NULL);
+  str[len] = '\0';
+  neg = (n < 0);
+  if (neg)
+    n = -n;
+  i = len - 1;
+  fill(str, i, n, neg);
+  return (str);
 }

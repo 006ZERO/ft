@@ -1,72 +1,66 @@
+
+
 #include "libft.h"
 
-static int	count_words(char const *s, char c)
-{
-	int	count;
-	int	in_word;
+static size_t word_count(char const *s, char c) {
+  size_t count;
+  size_t i;
 
-	count = 0;
-	in_word = 0;
-	while (*s)
-	{
-		if (*s != c && !in_word)
-		{
-			in_word = 1;
-			count++;
-		}
-		else if (*s == c)
-			in_word = 0;
-		s++;
-	}
-	return (count);
+  count = 0;
+  i = 0;
+  while (s[i] != '\0') {
+    while (s[i] == c)
+      i++;
+    if (s[i] != '\0') {
+      count++;
+      while (s[i] != '\0' && s[i] != c)
+        i++;
+    }
+  }
+  return (count);
 }
 
-static void	free_split(char **arr, int i)
-{
-	while (i >= 0)
-	{
-		free(arr[i]);
-		i--;
-	}
-	free(arr);
+static void free_split(char **res, size_t word_i) {
+  size_t j;
+
+  j = 0;
+  while (j < word_i) {
+    free(res[j]);
+    j++;
+  }
+  free(res);
 }
 
-static char	*next_word(char const *s, char c, size_t *end)
-{
-	size_t	i;
-
-	i = 0;
-	while (s[i] && s[i] != c)
-		i++;
-	*end = i;
-	return (ft_substr(s, 0, i));
+static void find_word(char const *s, char c, size_t *i, size_t *start) {
+  while (s[*i] == c)
+    (*i)++;
+  *start = *i;
+  while (s[*i] != '\0' && s[*i] != c)
+    (*i)++;
 }
 
-char	**ft_split(char const *s, char c)
-{
-	char	**result;
-	int		words;
-	int		i;
-	size_t	end;
+char **ft_split(char const *s, char c) {
+  size_t nword;
+  size_t i;
+  size_t start;
+  size_t word_i;
+  char **res;
 
-	words = count_words(s, c);
-	result = (char **)malloc(sizeof(char *) * (words + 1));
-	if (result == NULL)
-		return (NULL);
-	i = 0;
-	while (i < words)
-	{
-		while (*s == c)
-			s++;
-		result[i] = next_word(s, c, &end);
-		if (result[i] == NULL)
-		{
-			free_split(result, i - 1);
-			return (NULL);
-		}
-		s += end;
-		i++;
-	}
-	result[i] = NULL;
-	return (result);
+  nword = word_count(s, c);
+  res = malloc((nword + 1) * sizeof(char *));
+  if (res == NULL)
+    return (NULL);
+  i = 0;
+  word_i = 0;
+  while (word_i < nword) {
+    find_word(s, c, &i, &start);
+    res[word_i] = ft_substr(s, start, i - start);
+    if (!res[word_i]) {
+      free_split(res, word_i);
+      return (NULL);
+    }
+    word_i++;
+  }
+  res[nword] = NULL;
+  return (res);
 }
